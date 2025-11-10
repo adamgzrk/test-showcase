@@ -17,7 +17,7 @@ class Users(StrEnum):
     ERROR = "error_user"
     VISUAL = "visual_user"
     PASSWORD = "secret_sauce"
-
+    
 
 class LoadStates(StrEnum):
     pass

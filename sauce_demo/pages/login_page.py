@@ -1,5 +1,17 @@
 from .base_page import BasePage
 from playwright.sync_api import Page
+from enum import StrEnum
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from sauce_demo import SauceDemo
+
+
+class ErrMsg(StrEnum):
+    NO_LOGIN = "Username is required"
+    NO_PASSWORD = "Password is required"
+    WRONG_CREDENTIALS = "Username and password do not match any user in this service"
+    LOCKED_OUT = "Sorry, this user has been locked out."
 
 
 class LoginPage(BasePage):
@@ -8,11 +20,13 @@ class LoginPage(BasePage):
     USERNAME_FIELD = "#user-name.input_error.form_input"
     PASSWORD_FIELD = "#password.input_error.form_input"
     LOGIN_BTN = "#login-button.submit-button.btn_action"
-    ERR_DTID = "error"
+    ERR_DTID = '[data-test="error"]'
 
-    def __init__(self, page: Page):
+    def __init__(self, page: Page, sauce: "SauceDemo"):
+        super().__init__(page)
         self.page = page
-        super().__init__(self.page)
+        self.sauce = sauce
+        self.errors = ErrMsg
 
 
     def navigate(self, wait_until: str = "load", timeout: int = 10_000):
@@ -39,5 +53,7 @@ class LoginPage(BasePage):
     
     def get_error_container_text(self):
         "Return text from error msg container."
-        return self.page.get_by_test_id(self.ERR_DTID).text_content()
+        return self.page.locator(self.ERR_DTID).inner_text()
+    
+
         
